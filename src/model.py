@@ -1,23 +1,20 @@
 import math
+
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-
-dropout = 0.2
-n_embd = 32
-block_size = 128
-vocab_size = 65 # TODO: Make variable
+from src.config import block_size, dropout, embed_size, n_heads, n_layer
 
 
 class Head(nn.Module):
     """ one head of self-attention """
 
-    def __init__(self, n_embd, head_size):
+    def __init__(self, head_size):
         super().__init__()
-        self.key = nn.Linear(n_embd, head_size, bias=False)
-        self.query = nn.Linear(n_embd, head_size, bias=False)
-        self.value = nn.Linear(n_embd, head_size, bias=False)
+        self.key = nn.Linear(embed_size, head_size, bias=False)
+        self.query = nn.Linear(embed_size, head_size, bias=False)
+        self.value = nn.Linear(embed_size, head_size, bias=False)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
@@ -46,28 +43,20 @@ class Head(nn.Module):
 class MultiHeadAttention(nn.Module):
     """ multiple heads of self-attention in parallel """
 
-    def __init__(self, head_size):
+    def __init__(self):
         super().__init__()
-        # best practice to depend head_size on n_embed and n_heads
-        # this is to keep compute complexity the same
-        head_size = n_embd // 4
 
-        self.head1 = Head(n_embd, head_size)
-        self.head2 = Head(n_embd, head_size)
-        self.head3 = Head(n_embd, head_size)
-        self.head4 = Head(n_embd, head_size)
-
-        self.linear = nn.Linear(head_size * 4, n_embd)
+        # list of parallel heads that are concatenated by the linear layer in the end
+        head_size = embed_size // n_heads
+        heads_list = [Head(head_size) for _ in range(n_heads)]
+        
+        self.heads = nn.ModuleList(heads_list)
+        self.linear = nn.Linear(n_heads * head_size, embed_size)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        heads_out = [
-            self.head1(x), 
-            self.head2(x), 
-            self.head3(x), 
-            self.head4(x)
-        ]
-        out = torch.cat(heads_out, dim=-1)
+        heads_list = [h(x) for h in self.heads]
+        out = torch.cat(heads_list, dim=-1)
         out = self.linear(out)
         out = self.dropout(out)
         return out
@@ -76,12 +65,13 @@ class MultiHeadAttention(nn.Module):
 class FeedFoward(nn.Module):
     """ a simple linear layer followed by a non-linearity """
 
-    def __init__(self, n_embd):
+    def __init__(self):
         super().__init__()
+        # factor of 4 is the multiplier of nodes
         self.net = nn.Sequential(
-            nn.Linear(n_embd, 4 * n_embd), # factor of 4 is magic number from paper
+            nn.Linear(embed_size, 4 * embed_size), 
             nn.ReLU(),
-            nn.Linear(4 * n_embd, n_embd),  # factor of 4 is magic number from paper
+            nn.Linear(4 * embed_size, embed_size),
             nn.Dropout(dropout),
         )
 
@@ -92,14 +82,13 @@ class FeedFoward(nn.Module):
 class Block(nn.Module):
     """ Transformer block: communication followed by computation """
 
-    def __init__(self, n_embd):
-        # n_embd: embedding dimension, n_head: the number of heads we'd like
+    def __init__(self):
         super().__init__()
-        head_size = n_embd // 4
-        self.sa = MultiHeadAttention(head_size)
-        self.ffwd = FeedFoward(n_embd)
-        self.ln1 = nn.LayerNorm(n_embd)
-        self.ln2 = nn.LayerNorm(n_embd)
+
+        self.sa = MultiHeadAttention()
+        self.ffwd = FeedFoward()
+        self.ln1 = nn.LayerNorm(embed_size)
+        self.ln2 = nn.LayerNorm(embed_size)
 
     def forward(self, x):
         x = x + self.sa(self.ln1(x))
@@ -109,33 +98,29 @@ class Block(nn.Module):
 
 class GPTLanguageModel(nn.Module):
 
-    def __init__(self):
+    def __init__(self, vocab_size: int):
         super().__init__()
+
         # embedding tables for token and their positioning in the context
-        self.token_embedding = nn.Embedding(vocab_size, n_embd)
-        self.pos_embedding = nn.Embedding(block_size, n_embd)
+        self.token_embedding = nn.Embedding(vocab_size, embed_size)
+        self.pos_embedding = nn.Embedding(block_size, embed_size)
         
         # put one block after the other sequentially (not parallel like multi-head attention)
-        self.blocks = nn.Sequential(
-            Block(n_embd),
-            Block(n_embd),
-            Block(n_embd),
-            Block(n_embd),
-            Block(n_embd)
-        )
-        # final output layer norm
-        self.ln_output = nn.LayerNorm(n_embd)
-        self.linear_output = nn.Linear(n_embd, vocab_size)
+        block_list = [Block() for _ in range(n_layer)]
+        self.blocks = nn.Sequential(*block_list)
+        
+        # output layer after sequential blocks
+        self.ln_output = nn.LayerNorm(embed_size)
+        self.linear_output = nn.Linear(embed_size, vocab_size)
 
-        # better init, not covered in the original GPT video, but important, will cover in followup video
-        self.apply(self._init_weights)
+        # initialize weights and biases for linear layers and embeddings
+        self.apply(self.init_weights)
 
-    def _init_weights(self, module):
-
+    def init_weights(self, module):
         if isinstance(module, nn.Linear):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
             
-            # The linear layers in self-attention do not have a bias
+            # The linear layers in self-attention do not have a biases
             if module.bias is not None:
                 torch.nn.init.zeros_(module.bias)
 
@@ -145,13 +130,12 @@ class GPTLanguageModel(nn.Module):
     def forward(self, idx, targets=None):
         B, T = idx.shape
 
-        # idx and targets are both (B,T) tensor of integers
-        tok_emb = self.token_embedding(idx)                 # (B, T, C)
-        pos_emb = self.pos_embedding(torch.arange(T))       # (T, C)
-        x = tok_emb + pos_emb                               # (B, T, C)
-        x = self.blocks(x)                                  # (B, T, C)
-        x = self.ln_output(x)                               # (B, T, C)
-        logits = self.linear_output(x)                      # (B, T, vocab_size)
+        tok_emb = self.token_embedding(idx)                     # (B, T, C)
+        pos_emb = self.pos_embedding(torch.arange(T))           # (T, C)
+        x = tok_emb + pos_emb                                   # (B, T, C)
+        x = self.blocks(x)                                      # (B, T, C)
+        x = self.ln_output(x)                                   # (B, T, C)
+        logits = self.linear_output(x)                          # (B, T, vocab_size)
 
         if targets is None:
             loss = None
@@ -164,18 +148,20 @@ class GPTLanguageModel(nn.Module):
         return logits, loss
 
     def generate(self, idx, max_new_tokens):
-        # idx is (B, T) array of indices in the current context
+        
         for _ in range(max_new_tokens):
-            # crop idx to the last block_size tokens
-            idx_cond = idx[:, -block_size:]
+            # idx is (B, T) array of indices in the current context
+            # crop idx to the last block_size tokens for each batch (row)
+            idx_cond = idx[:, -block_size:]                     # (B, T)
+
             # get the predictions
-            logits, _ = self(idx_cond)
-            # focus only on the last time step
-            logits = logits[:, -1, :] # becomes (B, C)
-            # apply softmax to get probabilities
-            probs = F.softmax(logits, dim=-1) # (B, C)
+            logits, _ = self(idx_cond)                          # (B, T, vocab_size)
+            logits = logits[:, -1, :]                           # (B, vocab_size)            
+            probs = F.softmax(logits, dim=-1)                   # (B, vocab_size)
+
             # sample from the distribution
-            idx_next = torch.multinomial(probs, num_samples=1) # (B, 1)
             # append sampled index to the running sequence
-            idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
+            idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
+            idx = torch.cat((idx, idx_next), dim=1)             # (B, T+1)
+
         return idx

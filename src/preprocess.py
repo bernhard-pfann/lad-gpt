@@ -29,11 +29,11 @@ def decode(tensor: torch.tensor, vocab: list) -> str:
 if __name__ == "__main__":
 
     # load corpus and obtain fixed set of vocabulary from it
-    text = open("assets/input.txt", "r").read()
+    text = open("../assets/input.txt", "r").read()
     vocab = get_vocab(text)
     
     # write vocabulary
-    with open("assets/vocab.txt", "w") as file: 
+    with open("../assets/vocab.txt", "w") as file: 
         file.write("".join(vocab))
 
     # encode characters into a tensor of integers
@@ -45,5 +45,5 @@ if __name__ == "__main__":
     valid_data = data[n:]
 
     # export tensors
-    torch.save(train_data, "assets/train.pt")
-    torch.save(valid_data, "assets/valid.pt")
+    torch.save(train_data, "../assets/train.pt")
+    torch.save(valid_data, "../assets/valid.pt")
