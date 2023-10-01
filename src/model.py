@@ -164,4 +164,4 @@ class GPTLanguageModel(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
             idx = torch.cat((idx, idx_next), dim=1)             # (B, T+1)
 
-        return idx
+        return idx[0]

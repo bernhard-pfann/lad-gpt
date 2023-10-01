@@ -1,6 +1,8 @@
 from collections import Counter
 import torch
 
+from src.utils import encode
+
 
 def drop_datetime(txt: str) -> str:
     """Strip away the datetime information of each message."""
@@ -12,6 +14,7 @@ def drop_datetime(txt: str) -> str:
 
 
 def get_infrequent_chars(txt: str, min_count: int) -> list:
+    """Identify characters that appear less than a minimum count."""
 
     chars_counts = Counter(txt)
     chars_remove = [k for k,v in chars_counts.items() if v< min_count]
@@ -19,6 +22,8 @@ def get_infrequent_chars(txt: str, min_count: int) -> list:
 
 
 def drop_chars(txt: str, drop: list) -> str:
+    """Drop a list of characters from string."""
+
     return txt.translate(str.maketrans("", "", "".join(drop)))
 
 
@@ -26,25 +31,6 @@ def get_vocab(text: str) -> list:
     """Returns a sorted list of all available characters in the corpus."""
 
     return sorted(list(set("".join(text))))
-
-
-def encode(s: str, vocab: list) -> torch.tensor:
-    """Encode a string into a tensor of integers, given a fixed vocabulary."""
-
-    map = {s:i for i,s in enumerate(vocab)}
-    enc = [map[c] for c in s]
-    enc = torch.tensor(enc, dtype=torch.long)
-    return enc
-
-
-def decode(tensor: torch.tensor, vocab: list) -> str:
-    """Decode a tensor of integers, back into a string."""
-
-    map_enc = {s:i for i,s in enumerate(vocab)}
-    map_dec = {i:s for s,i in map_enc.items()}
-    dec = [map_dec[i.item()] for i in tensor]
-    dec = "".join(dec)
-    return dec
 
 
 if __name__ == "__main__":

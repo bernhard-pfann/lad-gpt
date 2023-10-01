@@ -28,3 +28,30 @@ def get_batch(data):
     x = torch.stack([data[i:i+block_size] for i in ix])
     y = torch.stack([data[i+1:i+block_size+1] for i in ix])
     return x, y
+
+
+def encode(s: str, vocab: list) -> torch.tensor:
+    """Encode a string into a tensor of integers, given a fixed vocabulary."""
+
+    map = {s:i for i,s in enumerate(vocab)}
+    enc = [map[c] for c in s]
+    enc = torch.tensor(enc, dtype=torch.long)
+    return enc
+
+
+def decode(tensor: torch.tensor, vocab: list) -> str:
+    """Decode a tensor of integers, back into a string."""
+
+    map_enc = {s:i for i,s in enumerate(vocab)}
+    map_dec = {i:s for s,i in map_enc.items()}
+    dec = [map_dec[i.item()] for i in tensor]
+    dec = "".join(dec)
+    return dec
+
+
+def get_prompt(vocab: str) -> torch.tensor:
+    """Get user input and encode into tensor."""
+
+    string = input() or ""
+    tensor = encode(string, vocab).unsqueeze(1).T
+    return tensor
