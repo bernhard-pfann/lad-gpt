@@ -1,5 +1,5 @@
 import torch
-from src.config import eval_iters, block_size, batch_size
+from config import eval_iters, block_size, batch_size
 
 
 @torch.no_grad()
