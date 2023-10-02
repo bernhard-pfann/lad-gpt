@@ -4,11 +4,12 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from src.config import block_size, dropout, embed_size, n_heads, n_layer
+from config import block_size, dropout, embed_size, n_heads, n_layer, end_token
+from utils import encode
 
 
 class Head(nn.Module):
-    """ one head of self-attention """
+    """One head of self-attention."""
 
     def __init__(self, head_size):
         super().__init__()
@@ -18,8 +19,10 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
+        """
         # input of size (batch, time-step, channels)
         # output of size (batch, time-step, head size)
+        """
         B,T,C = x.shape
         k = self.key(x)                                     # (B, T, head_size)
         q = self.query(x)                                   # (B, T, head_size)
@@ -41,7 +44,7 @@ class Head(nn.Module):
 
 
 class MultiHeadAttention(nn.Module):
-    """ multiple heads of self-attention in parallel """
+    """Multiple heads of self-attention in parallel."""
 
     def __init__(self):
         super().__init__()
@@ -63,7 +66,7 @@ class MultiHeadAttention(nn.Module):
 
 
 class FeedFoward(nn.Module):
-    """ a simple linear layer followed by a non-linearity """
+    """A simple linear layer followed by a non-linearity."""
 
     def __init__(self):
         super().__init__()
@@ -80,7 +83,7 @@ class FeedFoward(nn.Module):
 
 
 class Block(nn.Module):
-    """ Transformer block: communication followed by computation """
+    """Transformer block: communication followed by computation."""
 
     def __init__(self):
         super().__init__()
@@ -147,9 +150,14 @@ class GPTLanguageModel(nn.Module):
 
         return logits, loss
 
-    def generate(self, idx, max_new_tokens):
+    def generate(self, idx, vocab):
         
-        for _ in range(max_new_tokens):
+        # Initialize idx_net for while loop
+        idx_next = torch.zeros(1)
+        idx_end = encode([end_token], vocab)
+        
+        while idx_next[0] != idx_end:
+            # for _ in range(max_new_tokens):
             # idx is (B, T) array of indices in the current context
             # crop idx to the last block_size tokens for each batch (row)
             idx_cond = idx[:, -block_size:]                     # (B, T)
@@ -164,4 +172,5 @@ class GPTLanguageModel(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
             idx = torch.cat((idx, idx_next), dim=1)             # (B, T+1)
 
-        return idx[0]
+        # output everything except the end token
+        return idx[0][:-1]

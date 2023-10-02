@@ -1,5 +1,11 @@
+import random
+import re
+from datetime import datetime
+from typing import List, Union
+
 import torch
-from config import eval_iters, block_size, batch_size
+
+from config import batch_size, block_size, end_token, eval_iters
 
 
 @torch.no_grad()
@@ -30,11 +36,11 @@ def get_batch(data):
     return x, y
 
 
-def encode(s: str, vocab: list) -> torch.tensor:
-    """Encode a string into a tensor of integers, given a fixed vocabulary."""
+def encode(s: list, vocab: list) -> torch.tensor:
+    """Encode a list of tokens into a tensor of integers, given a fixed vocabulary."""
 
     map = {s:i for i,s in enumerate(vocab)}
-    enc = [map[c] for c in s]
+    enc = [map.get(c, random.randint(0, len(vocab))) for c in s]
     enc = torch.tensor(enc, dtype=torch.long)
     return enc
 
@@ -49,9 +55,28 @@ def decode(tensor: torch.tensor, vocab: list) -> str:
     return dec
 
 
-def get_prompt(vocab: str) -> torch.tensor:
-    """Get user input and encode into tensor."""
+def tokenizer(txt: str, senders: List[str]) -> List[str]:
+    """
+    Treats all single characters as token. As an except the sender names are also
+    considered single tokens each.
+    """
+    regex = "|".join(senders)+"|"+end_token+"|\S|\s"
+    tokens = re.findall(regex, txt)
+    return tokens
 
-    string = input() or ""
-    tensor = encode(string, vocab).unsqueeze(1).T
-    return tensor
+
+def tag(obj: Union[List[str], str]) -> Union[List[str], str]:
+    if isinstance(obj, list):
+        return [tag(i) for i in obj]
+    else:
+        return "<" + obj + ">"
+
+
+def get_vocab(text: Union[List[str], str]) -> List[str]:
+    """Returns a sorted list of all unique tokens in the corpus."""
+
+    return sorted(list(set(text)))
+
+
+def current_time():
+    return datetime.now().strftime("%H:%M:%S")
