@@ -34,6 +34,7 @@ The model closely follows the architecture introduced in the "Attention is all y
 - <code>run.py:</code> The main script with an argument parser to call either of the three actions ("preprocess", "train", "chat").
 
 ## How to Get Started
+### Installation:
 ```
 git clone https://github.com/bernhard-pfann/lad-gpt.git
 cd lad-gpt
