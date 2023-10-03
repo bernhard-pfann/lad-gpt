@@ -1,4 +1,4 @@
-# lad-gpt
+# Synethesize your WhatsApp Conversations
 ## Overview
 This repository facilitates the training of a character-level language model solely based on WhatsApp chat messages. After model training, one an enter a synthetic conversation with participants from the Whatsapp chat group. <br>
 - <b>Chat messages:</b> I have privately trained the model on the WhatsApp messages of a chat group the existed >6 years with >8 Mio characters. However, the model might also achieve reasonable quality with a smaller corpus.
