@@ -4,8 +4,8 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from config import block_size, dropout, embed_size, n_heads, n_layer, end_token
-from utils import encode
+from src.config import block_size, dropout, embed_size, n_heads, n_layer, end_token
+from src.utils import encode
 
 
 class Head(nn.Module):
@@ -157,6 +157,7 @@ class GPTLanguageModel(nn.Module):
         idx_end = encode([end_token], vocab)
         
         while idx_next[0] != idx_end:
+
             # for _ in range(max_new_tokens):
             # idx is (B, T) array of indices in the current context
             # crop idx to the last block_size tokens for each batch (row)

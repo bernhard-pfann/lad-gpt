@@ -1,11 +1,12 @@
 import random
 import re
+import time
 from datetime import datetime
 from typing import List, Union
 
 import torch
 
-from config import batch_size, block_size, end_token, eval_iters
+from src.config import batch_size, block_size, end_token, eval_iters
 
 
 @torch.no_grad()
@@ -80,3 +81,17 @@ def get_vocab(text: Union[List[str], str]) -> List[str]:
 
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
+
+
+def print_delayed(s: str, delay: float = 0.05) -> None:
+    """
+    Prints each character of a string one by one on the same line with a delay.
+
+    :param s: The input string.
+    :param delay: The time delay between each character in seconds.
+    """
+    for char in s:
+        print(char, end="", flush=True)
+        time.sleep(delay)
+
+    print("\n")

@@ -9,7 +9,7 @@ batch_size = 32
 
 # learning hyperparameters
 learn_rate = 3e-4
-max_iters = 20_000
+max_iters = 10
 eval_interval = 500
 
 # encoding

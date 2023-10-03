@@ -1,17 +1,20 @@
 import argparse
-import subprocess
+
+from src import chat, preprocess, train
+
 
 def main():
-    parser = argparse.ArgumentParser(description="asdf")
+    parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["preprocess", "train", "chat"], help="The mode to be execute.")
-
+    parser.add_argument("--update", action="store_true", help="Flag if model shall be updated for trained from scratch")
     args = parser.parse_args()
+
     if args.mode == "preprocess":
-        subprocess.run(["python", "src/preprocess.py"], check=True)
-    elif args.mode == 'train':
-        subprocess.run(["python", "src/train.py"], check=True)
-    elif args.mode == 'chat':
-        subprocess.run(["python", "src/chat.py"], check=True)
+        preprocess.make_train_test()
+    elif args.mode == "train":
+        train.model_training(args.update)
+    elif args.mode == "chat":
+        chat.conversation()
 
 if __name__ == "__main__":
     main()
