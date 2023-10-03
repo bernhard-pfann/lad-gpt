@@ -20,8 +20,8 @@ if __name__ == "__main__":
 
     # number of model parameters
     n_params = sum(p.numel() for p in model.parameters())
-    print("Model is being trained..")
-    print("Parameters to be optimized:", n_params)
+    print("Model is being trained...")
+    print(n_params, "parameters to be optimized\n", )
 
     # learning iterations
     for i in range(max_iters):

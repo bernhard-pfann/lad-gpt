@@ -47,7 +47,7 @@ def get_infrequent_chars(txt: str, min_count: int) -> List[str]:
 if __name__ == "__main__":
 
     # read corpus of whatsapp chat messages
-    with open("../assets/chat.txt", "r") as f:
+    with open("assets/chat.txt", "r") as f:
         text = f.read()
 
     # shrink vocabulary by eliminating rare characters
@@ -73,13 +73,13 @@ if __name__ == "__main__":
     valid_data = data[n:]
 
     # export tensors
-    torch.save(train_data, "../assets/train.pt")
-    torch.save(valid_data, "../assets/valid.pt")
+    torch.save(train_data, "assets/train.pt")
+    torch.save(valid_data, "assets/valid.pt")
 
-    with open("../assets/vocab.txt", "w", encoding="utf-8") as f:
+    with open("assets/vocab.txt", "w", encoding="utf-8") as f:
         f.write(json.dumps(vocab))
 
-    with open("../assets/senders.txt", "w", encoding="utf-8") as f:
+    with open("assets/senders.txt", "w", encoding="utf-8") as f:
         f.write(json.dumps(senders))
 
     print("SUCCESS")

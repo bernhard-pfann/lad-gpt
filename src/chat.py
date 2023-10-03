@@ -8,13 +8,13 @@ from utils import decode, encode, tokenizer
 
 if __name__ == "__main__":
 
-    with open("../assets/vocab.txt", "r", encoding="utf-8") as f:
+    with open("assets/vocab.txt", "r", encoding="utf-8") as f:
         vocab = json.loads(f.read())
 
-    with open("../assets/senders.txt", "r", encoding="utf-8") as f:
+    with open("assets/senders.txt", "r", encoding="utf-8") as f:
         all_senders = json.loads(f.read())    
 
-    model = torch.load("../assets/model.pt")
+    model = torch.load("assets/model.pt")
     completer = WordCompleter(all_senders, ignore_case=True)
     next_sender = prompt("Sender: ", completer=completer)    
 
