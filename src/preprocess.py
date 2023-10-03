@@ -9,14 +9,22 @@ from src.utils import encode, tag, tokenizer, get_vocab
 
 
 def make_train_test():
-    # TODO: Write docstring
-
-    # read corpus of whatsapp chat messages
+    """Prepare training and testing datasets from chat messages.
+    
+    This function performs multiple tasks:
+    
+    1. Reads a corpus of WhatsApp chat messages from a text file.
+    2. Filters out infrequent characters from the corpus.
+    3. Splits the text based on line breaks and identifies senders.
+    4. Tokenizes the text and encodes the tokens into integers.
+    5. Splits the encoded data into training and validation sets.
+    6. Saves the training and validation datasets, as well as the vocab and senders, to disk.
+    """
     with open("assets/input/chat.txt", "r") as f:
         text = f.read()
 
     # shrink vocabulary by eliminating rare characters
-    infreq_chars = get_infrequent_chars(text, min_count=100)
+    infreq_chars = get_infrequent_chars(text, min_count=200)
     infreq_chars += ["~\u202f"]
     text = drop_chars(text, infreq_chars)
 
@@ -52,8 +60,8 @@ def make_train_test():
 
 def fix_linebreaks(txt: str) -> Tuple[str, List[str]]:
     """
-    Line breaks are set before each timestamp, where '<END>' tokens are placed. While senders are also
-    tagged as individual tokens, a list of unique senders is collected.
+    Line breaks are set before each timestamp, where '<END>' tokens are placed. While 
+    senders are also tagged as individual tokens, a list of unique senders is collected.
     """
     txt_list = []
     sender_list = []

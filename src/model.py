@@ -9,8 +9,12 @@ from src.utils import encode
 
 
 class Head(nn.Module):
-    """One head of self-attention."""
-
+    """
+    This module performs self-attention operations on the input tensor, producing 
+    an output tensor with the same time-steps but different channels. 
+    
+    :param head_size: The size of the head in the multi-head attention mechanism.
+    """
     def __init__(self, head_size):
         super().__init__()
         self.key = nn.Linear(embed_size, head_size, bias=False)
@@ -44,8 +48,10 @@ class Head(nn.Module):
 
 
 class MultiHeadAttention(nn.Module):
-    """Multiple heads of self-attention in parallel."""
-
+    """
+    This class contains multiple `Head` objects, which perform self-attention 
+    operations in parallel.
+    """
     def __init__(self):
         super().__init__()
 
@@ -66,8 +72,10 @@ class MultiHeadAttention(nn.Module):
 
 
 class FeedFoward(nn.Module):
-    """A simple linear layer followed by a non-linearity."""
-
+    """
+    This module passes the input tensor through a series of linear transformations 
+    and non-linear activations.
+    """
     def __init__(self):
         super().__init__()
         # factor of 4 is the multiplier of nodes
@@ -83,8 +91,10 @@ class FeedFoward(nn.Module):
 
 
 class Block(nn.Module):
-    """Transformer block: communication followed by computation."""
-
+    """
+    This module contains a single transformer block, which consists of multi-head 
+    self-attention followed by feed-forward neural networks.
+    """
     def __init__(self):
         super().__init__()
 
@@ -100,7 +110,10 @@ class Block(nn.Module):
 
 
 class GPTLanguageModel(nn.Module):
-
+    """
+    This class encompasses the entire GPT model, including the token and position embeddings, 
+    multiple transformer blocks, and output layer.
+    """
     def __init__(self, vocab_size: int):
         super().__init__()
 
