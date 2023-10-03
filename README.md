@@ -33,14 +33,13 @@ The model closely follows the architecture introduced in the "Attention is all y
 - <code>src/utils.py:</code> Other useful utility functions.
 - <code>run.py:</code> The main script with an argument parser to call either of the three actions ("preprocess", "train", "chat").
 
-## Installation
+## How to Get Started
 ```
 git clone https://github.com/bernhard-pfann/lad-gpt.git
 cd lad-gpt
 pip install -r requirements.txt
 ```
 
-## How To Get Input Data
 To utilize this project fully, you'll need a .txt file that contains messages from a WhatsApp chat. Here are the steps to export your WhatsApp group chat into a .txt file:
 
 ### For Android Users:
