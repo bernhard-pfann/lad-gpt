@@ -32,13 +32,19 @@ def conversation() -> None:
 
     model = torch.load("assets/output/model.pt")
     completer = WordCompleter(all_senders, ignore_case=True)
-    next_sender = prompt("Sender: ", completer=completer, default="")
+    
+    input = prompt("sender: ", completer=completer, default="")
+    output = torch.tensor([], dtype=torch.long)
 
-    while next_sender != end_token:
+    while input != end_token:
 
-        tokens = tokenizer(next_sender, all_senders)
-        context = encode(tokens, vocab).unsqueeze(1).T
-        sampled = model.generate(context, vocab)
+        add_tokens = tokenizer(input, all_senders)
+        add_context = encode(add_tokens, vocab)
+        context = torch.cat((output, add_context)).unsqueeze(1).T
+        
+        n0 = len(output)
+        output = model.generate(context, vocab)
+        n1 = len(output)
 
-        print_delayed(decode(sampled, vocab))
-        next_sender = prompt("Sender: ", completer=completer, default="")
+        print_delayed(decode(output[n0-n1:], vocab))
+        input = prompt("sender: ", completer=completer, default="")
