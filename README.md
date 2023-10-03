@@ -8,7 +8,6 @@ The model closely follows the architecture introduced in the "Attention is all y
 
 
 ## Folder Structure
-***
 ```
 |-- assets
 |   |-- input
@@ -35,7 +34,6 @@ The model closely follows the architecture introduced in the "Attention is all y
 - <code>run.py:</code> The main script with an argument parser to call either of the three actions ("preprocess", "train", "chat").
 
 ## Installation
-***
 ```
 git clone https://github.com/bernhard-pfann/lad-gpt.git
 cd lad-gpt
@@ -43,7 +41,6 @@ pip install -r requirements.txt
 ```
 
 ## How To Get Input Data
-***
 To utilize this project fully, you'll need a .txt file that contains messages from a WhatsApp chat. Here are the steps to export your WhatsApp group chat into a .txt file:
 
 ### For Android Users:
@@ -71,7 +68,6 @@ To utilize this project fully, you'll need a .txt file that contains messages fr
 Once you have the .txt file, place it in the <code>assets/input</code> directory, called <code>chat.txt</code>. Then you are ready to go!
 
 ## Terminal Instructions
-***
 
 Once input data is in place, the chats need to be encoded into numerical tensors. The encoded data is also split into training and validation set:
 ```
