@@ -52,7 +52,7 @@ def decode(tensor: torch.tensor, vocab: list) -> str:
     map_enc = {s:i for i,s in enumerate(vocab)}
     map_dec = {i:s for s,i in map_enc.items()}
     dec = [map_dec[i.item()] for i in tensor]
-    dec = "".join(dec)
+    dec = " ".join(dec)
     return dec
 
 
@@ -88,4 +88,4 @@ def print_delayed(s: str, delay: float = 0.05) -> None:
         print(char, end="", flush=True)
         time.sleep(delay)
 
-    print("\n")
+    print()
