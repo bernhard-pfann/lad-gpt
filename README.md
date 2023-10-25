@@ -29,10 +29,12 @@ The model closely follows the architecture introduced in the "Attention is all y
 |-- run.py
 ```
 
-### Files Description:
+### Assets Description:
 - <code>data/input/chat.txt:</code> The input file needs to be an exported WhatsApp chat.
 - <code>data/output/:</code> The encoded training/validation data and the trained model will be written into this localtion.
 - <code>models/model.pt:</code> Trained pytorch model object.
+
+### Module Description:
 - <code>src/preprocess.py:</code> Converts chat messages into encoded PyTorch tensors. Data is split into training and validation set.
 - <code>src/model.py:</code> Defines the language model class.
 - <code>src/train.py:</code> Contains code for training the language model.
@@ -72,7 +74,7 @@ To utilize this project fully, you'll need a .txt file that contains messages fr
 
 5. Select Export Method: Choose an option to export the chat, for example, through Mail. You can then download the text file from your email.
 
-Once you have the .txt file, place it in the <code>assets/input</code> directory, called <code>chat.txt</code>. Then you are ready to go!
+Once you have the .txt file, place it in the <code>data/input</code> directory, called <code>chat.txt</code>. Then you are ready to go!
 
 ## Terminal Instructions
 
