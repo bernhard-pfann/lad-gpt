@@ -21,11 +21,11 @@ The model closely follows the architecture introduced in the "Attention is all y
 |   |--model.pt
 |-- src
 |   |-- chat.py
-|   |-- config.py
 |   |-- model.py
 |   |-- preprocess.py
 |   |-- train.py
-|   |-- train.py
+|   |-- utils.py
+|-- config.py
 |-- run.py
 ```
 
