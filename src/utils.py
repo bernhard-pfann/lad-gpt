@@ -1,12 +1,12 @@
 import random
-import re
 import time
 from datetime import datetime
 from typing import List, Union
 
 import torch
+from nltk.tokenize import RegexpTokenizer
 
-from src.config import batch_size, block_size, end_token, eval_iters
+from config import batch_size, block_size, eval_iters
 
 
 @torch.no_grad()
@@ -56,21 +56,15 @@ def decode(tensor: torch.tensor, vocab: list) -> str:
     return dec
 
 
-def tokenizer(txt: str, senders: List[str]) -> List[str]:
+def custom_tokenizer(txt: str, spec_tokens: List[str], pattern: str="|\d|\\w+|[^\\s]") -> List[str]:
     """
-    Treats all single characters as token. As an except the sender names are also
-    considered single tokens each.
+    Tokenize text into words or characters using NLTK's RegexpTokenizer, considerung 
+    given special combinations as single tokens.
     """
-    regex = "|".join(senders)+"|"+end_token+"|\S|\s"
-    tokens = re.findall(regex, txt)
+    pattern = "|".join(spec_tokens) + pattern
+    tokenizer = RegexpTokenizer(pattern)
+    tokens = tokenizer.tokenize(txt)
     return tokens
-
-
-def tag(obj: Union[List[str], str]) -> Union[List[str], str]:
-    if isinstance(obj, list):
-        return [tag(i) for i in obj]
-    else:
-        return "<" + obj + ">"
 
 
 def get_vocab(text: Union[List[str], str]) -> List[str]:

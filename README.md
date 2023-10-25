@@ -9,10 +9,16 @@ The model closely follows the architecture introduced in the "Attention is all y
 
 ## Folder Structure
 ```
-|-- assets
+|-- data
 |   |-- input
 |   |   |-- chat.txt
 |   |-- output
+|   |   |-- contacts.txt
+|   |   |-- vocab.txt
+|   |   |-- train.pt
+|   |   |-- valid.pt
+|-- models
+|   |--model.pt
 |-- src
 |   |-- chat.py
 |   |-- config.py
@@ -24,8 +30,9 @@ The model closely follows the architecture introduced in the "Attention is all y
 ```
 
 ### Files Description:
-- <code>assets/input/chat.txt:</code> The input file needs to be an exported WhatsApp chat.
-- <code>assets/output/:</code> The encoded training/validation data and the trained model will be written into this localtion.
+- <code>data/input/chat.txt:</code> The input file needs to be an exported WhatsApp chat.
+- <code>data/output/:</code> The encoded training/validation data and the trained model will be written into this localtion.
+- <code>models/model.pt:</code> Trained pytorch model object.
 - <code>src/preprocess.py:</code> Converts chat messages into encoded PyTorch tensors. Data is split into training and validation set.
 - <code>src/model.py:</code> Defines the language model class.
 - <code>src/train.py:</code> Contains code for training the language model.

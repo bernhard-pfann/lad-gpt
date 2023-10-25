@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from src.config import block_size, dropout, embed_size, n_heads, n_layer, end_token
+from config import block_size, dropout, embed_size, n_heads, n_layer, end_token
 from src.utils import encode
 
 

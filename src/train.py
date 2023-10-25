@@ -3,7 +3,7 @@ import torch
 
 from src.model import GPTLanguageModel
 from src.utils import estimate_loss, get_batch, current_time
-from src.config import learn_rate, max_iters, eval_interval
+from config import learn_rate, max_iters, eval_interval
 
 
 def model_training(update: bool) -> None:
@@ -18,17 +18,17 @@ def model_training(update: bool) -> None:
     """
     # LOAD DATA -----------------------------------------------------------------
 
-    train_data = torch.load("assets/output/train.pt")
-    valid_data = torch.load("assets/output/valid.pt")
+    train_data = torch.load("data/output/train.pt")
+    valid_data = torch.load("data/output/valid.pt")
 
-    with open("assets/output/vocab.txt", "r", encoding="utf-8") as f:
+    with open("data/output/vocab.txt", "r", encoding="utf-8") as f:
         vocab = json.loads(f.read())
 
     # INITIALIZE / LOAD MODEL ---------------------------------------------------
 
     if update:
         try:
-            model = torch.load("assets/output/model.pt")
+            model = torch.load("models/model.pt")
             print("Loaded existing model to continue training.")
         except FileNotFoundError:
             print("No existing model found. Initializing a new model.")
@@ -66,5 +66,5 @@ def model_training(update: bool) -> None:
         loss.backward()
         optimizer.step()
 
-    torch.save(model, "assets/output/model.pt")
+    torch.save(model, "models/model.pt")
     print("Model saved")
