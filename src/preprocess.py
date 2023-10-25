@@ -44,14 +44,14 @@ def make_train_test() -> None:
         text = f.read()
 
     # remove very rare characters (probably non-utf8)
-    infreq_chars = get_infrequent_chars(text, min_count=400)
+    infreq_chars = get_infrequent_chars(text, min_count=800)
     infreq_chars += ["~\u202f"]
     text = drop_chars(text, infreq_chars)
 
     # split string into list of tuples (date, contact, message)
     pattern = r'\[(.*?)\] (.*?): (.*)'
     matches = re.findall(pattern, text)
-    text = [(x1, x2.lower()) for x0, x1, x2 in matches]
+    text = [(x1, x2.lower()) for x0, x1, x2 in matches if not x2.startswith("\u200e")]
 
     # get list of all contacts, treated as special tokens
     contacts = list(set([contact+":" for contact, msg in text]))
