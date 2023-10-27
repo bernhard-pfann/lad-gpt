@@ -1,26 +1,43 @@
 import json
 import re
 from collections import Counter
-from typing import List, Tuple
+from typing import List, Tuple, Union, Set
 
 import torch
 
-from config import end_token
+from config import end_token, unknown_token, token_pattern
 from src.utils import custom_tokenizer, encode, get_vocab
 
 
-def drop_chars(txt: str, drop: List[str]) -> str:
+def get_infrequent_tokens(tokens: Union[List[str], str], min_count: int) -> List[str]:
+    """
+    Identify tokens that appear less than a minimum count.
+    
+    :param tokens: When it is the raw text in a string, frequencies are counted on character level.
+                   When it is the tokenized corpus as list, frequencies are counted on token level.
+    :min_count: Threshold of occurence to flag a token.
+    :return: List of tokens that appear infrequently. 
+    """
+    counts = Counter(tokens)
+    infreq_tokens = set([k for k,v in counts.items() if v<=min_count])
+    return infreq_tokens
+
+
+def mask_tokens(tokens: List[str], mask: Set[str]) -> List[str]:
+    """
+    Iterate through all tokens. Any token that is part of the set, is replaced by the unknown token.
+
+    :param tokens: The tokenized corpus.
+    :param mask: Set of tokens that shall be masked in the corpus.
+    :return: List of tokenized corpus after the masking operation.
+    """
+    return [t.replace(t, unknown_token) if t in mask else t for t in tokens]
+
+
+def drop_chars(txt: str, drop: Set[str]) -> str:
     """Drop a list of characters from string"""
 
     return txt.translate(str.maketrans("", "", "".join(drop)))
-
-
-def get_infrequent_chars(txt: str, min_count: int) -> List[str]:
-    """Identify characters that appear less than a minimum count"""
-
-    chars_counts = Counter(txt)
-    chars_remove = [k for k,v in chars_counts.items() if v<= min_count]
-    return chars_remove
 
 
 def flatten_tuple(txt: List[Tuple[str, str]]) -> str:
@@ -43,9 +60,8 @@ def make_train_test() -> None:
     with open("data/input/chat.txt", "r") as f:
         text = f.read()
 
-    # remove very rare characters (probably non-utf8)
-    infreq_chars = get_infrequent_chars(text, min_count=800)
-    infreq_chars += ["~\u202f"]
+    # remove very rare characters (mostly emojies)
+    infreq_chars = get_infrequent_tokens(text, min_count=800)
     text = drop_chars(text, infreq_chars)
 
     # split string into list of tuples (date, contact, message)
@@ -59,7 +75,11 @@ def make_train_test() -> None:
 
     # convert list of tuples into list of tokens (word or character level)
     text_flat = flatten_tuple(text)
-    tokens = custom_tokenizer(txt=text_flat, spec_tokens=spec_tokens)
+    tokens = custom_tokenizer(txt=text_flat, spec_tokens=spec_tokens, pattern=token_pattern)
+
+    # mask very rare tokens as unknown, to shrink the vocabulary
+    infreq_tokens = get_infrequent_tokens(tokens, min_count=2)
+    tokens = mask_tokens(tokens, infreq_tokens)
 
     # get vocabulary of corpus to file
     vocab = get_vocab(tokens)

@@ -1,11 +1,12 @@
 import json
 import random
+
 import torch
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from config import end_token
-from src.utils import decode, encode, print_delayed, custom_tokenizer
+from config import end_token, token_pattern
+from src.utils import custom_tokenizer, decode, encode, print_delayed
 
 
 def conversation() -> None:
@@ -40,7 +41,7 @@ def conversation() -> None:
     while input != end_token:
         for _ in range(10):
 
-            add_tokens = custom_tokenizer(input, spec_tokens)
+            add_tokens = custom_tokenizer(input, spec_tokens, token_pattern)
             add_context = encode(add_tokens, vocab)
             context = torch.cat((output, add_context)).unsqueeze(1).T
             

@@ -1,10 +1,10 @@
 # Synethesize your WhatsApp Conversations
 ## Overview
-This repository facilitates the training of a character-level language model solely based on WhatsApp chat messages. After model training, one an enter a synthetic conversation with participants from the Whatsapp chat group. <br>
-- <b>Chat messages:</b> I have privately trained the model on the WhatsApp messages of a chat group the existed >6 years with >8 Mio characters. However, the model might also achieve reasonable quality with a smaller corpus.
+This repository facilitates the training of a character-level or word-level language model solely based on WhatsApp chat messages. After model training, one can kick-off a synthetic conversation from the Whatsapp chat group. <br>
+- <b>Chat messages:</b> I have privately trained the model on the WhatsApp messages of a chat group with >8 Mio characters. However, the model might also achieve reasonable quality with a smaller corpus.
 
 - <b>Language model:</b>
-The model closely follows the architecture introduced in the "Attention is all you head" paper by xxx. Also the pytorch implementation of the model is heavily inspired by a tutorial of Andrew Kaparty.
+The model closely follows the architecture introduced in "Attention Is All You Need" (2017) by Vaswani et. al.. Also the pytorch implementation of the model is heavily inspired by a [video tutorial by Andrew Kaparty](https://www.youtube.com/watch?v=kCc8FmEb1nY).
 
 
 ## Folder Structure

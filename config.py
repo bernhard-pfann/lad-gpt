@@ -1,18 +1,21 @@
 # model hyperparameters
-block_size = 32 # 128
-embed_size = 128 # 128
-dropout = 0.3
+block_size = 16 # 32
+embed_size = 16 # 256
+dropout = 0.2
 n_heads = 6
 n_layer = 6
 eval_iters = 200
-batch_size = 64
+batch_size = 32
 
 # learning hyperparameters
 learn_rate = 3e-4
-max_iters = 1_000
+max_iters = 5000
 eval_interval = 500
 
 # encoding
 end_token = "<END>"
-# tokenizer_pattern = "|\d|\\w+|[^\\s]"
-# tokenizer_pattern = "|."
+unknown_token = "<UNK>"
+
+# tokenizer patterns
+token_level = "char"
+token_pattern = {"word": "|\d|\\w+|[^\\s]", "char": "|."}[token_level]
