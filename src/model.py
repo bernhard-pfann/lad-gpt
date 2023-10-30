@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from config import block_size, dropout, embed_size, n_heads, n_layer, end_token
+from config import block_size, dropout, embed_size, n_heads, n_layer, end_token, unknown_token
 from src.utils import encode
 
 
@@ -168,10 +168,11 @@ class GPTLanguageModel(nn.Module):
         # Initialize idx_net for while loop
         idx_next = torch.zeros(1)
         idx_end = encode([end_token], vocab)
-        
+        idx_unk = encode([unknown_token], vocab)
+
+        # continue to sample tokens until special end token
         while idx_next[0] != idx_end:
 
-            # for _ in range(max_new_tokens):
             # idx is (B, T) array of indices in the current context
             # crop idx to the last block_size tokens for each batch (row)
             idx_cond = idx[:, -block_size:]                     # (B, T)
@@ -182,8 +183,13 @@ class GPTLanguageModel(nn.Module):
             probs = F.softmax(logits, dim=-1)                   # (B, vocab_size)
 
             # sample from the distribution
-            # append sampled index to the running sequence
             idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
+
+            # when the sampled token is UNK, then sample again
+            while idx_next[0] == idx_unk:
+                idx_next = torch.multinomial(probs, num_samples=1)  # (B, 1)
+                
+            # append sampled index to the running sequence
             idx = torch.cat((idx, idx_next), dim=1)             # (B, T+1)
 
         # output everything except the end token
