@@ -1,11 +1,11 @@
 import json
 import re
 from collections import Counter
-from typing import List, Tuple, Union, Set
+from typing import List, Set, Tuple, Union
 
 import torch
 
-from config import end_token, unknown_token, token_pattern
+from config import end_token, min_count_chars, min_count_tokens, unknown_token
 from src.utils import custom_tokenizer, encode, get_vocab
 
 
@@ -61,7 +61,7 @@ def make_train_test() -> None:
         text = f.read()
 
     # remove very rare characters (mostly emojies)
-    infreq_chars = get_infrequent_tokens(text, min_count=800)
+    infreq_chars = get_infrequent_tokens(text, min_count=min_count_chars)
     text = drop_chars(text, infreq_chars)
 
     # split string into list of tuples (date, contact, message)
@@ -75,10 +75,10 @@ def make_train_test() -> None:
 
     # convert list of tuples into list of tokens (word or character level)
     text_flat = flatten_tuple(text)
-    tokens = custom_tokenizer(txt=text_flat, spec_tokens=spec_tokens, pattern=token_pattern)
+    tokens = custom_tokenizer(txt=text_flat, spec_tokens=spec_tokens)
 
     # mask very rare tokens as unknown, to shrink the vocabulary
-    infreq_tokens = get_infrequent_tokens(tokens, min_count=2)
+    infreq_tokens = get_infrequent_tokens(tokens, min_count=min_count_tokens)
     tokens = mask_tokens(tokens, infreq_tokens)
 
     # get vocabulary of corpus to file
