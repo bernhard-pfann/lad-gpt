@@ -1,9 +1,10 @@
 import json
+
 import torch
 
+from config import eval_interval, learn_rate, max_iters
 from src.model import GPTLanguageModel
-from src.utils import estimate_loss, get_batch, current_time
-from config import learn_rate, max_iters, eval_interval
+from src.utils import current_time, estimate_loss, get_batch
 
 
 def model_training(update: bool) -> None:
