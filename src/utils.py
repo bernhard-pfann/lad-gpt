@@ -6,7 +6,7 @@ from typing import List, Union
 import torch
 from nltk.tokenize import RegexpTokenizer
 
-from config import batch_size, block_size, eval_iters
+from config import batch_size, block_size, eval_iters, unknown_token
 
 
 @torch.no_grad()
@@ -38,10 +38,15 @@ def get_batch(data):
 
 
 def encode(s: list, vocab: list) -> torch.tensor:
-    """Encode a list of tokens into a tensor of integers, given a fixed vocabulary."""
+    """
+    Encode a list of tokens into a tensor of integers, given a fixed vocabulary. 
+    When a token is not found in the vocabulary, the special unknown token is assigned. 
+    When the training set did not use that special token, a random token is assigned.
+    """
+    rand_token = random.randint(0, len(vocab))
 
     map = {s:i for i,s in enumerate(vocab)}
-    enc = [map.get(c, random.randint(0, len(vocab))) for c in s]
+    enc = [map.get(c, map.get(unknown_token, rand_token)) for c in s]
     enc = torch.tensor(enc, dtype=torch.long)
     return enc
 
@@ -60,6 +65,13 @@ def custom_tokenizer(txt: str, spec_tokens: List[str], pattern: str="|\d|\\w+|[^
     """
     Tokenize text into words or characters using NLTK's RegexpTokenizer, considerung 
     given special combinations as single tokens.
+
+    :param txt: The corpus as a single string element.
+    :param spec_tokens: A list of special tokens (e.g. ending, out-of-vocab).
+    :param pattern: By default the corpus is tokenized on a word level (split by spaces).
+                    Numbers are considered single tokens.
+
+    >> note: The pattern for character level tokenization is '|.'
     """
     pattern = "|".join(spec_tokens) + pattern
     tokenizer = RegexpTokenizer(pattern)
