@@ -1,6 +1,6 @@
 # model hyperparameters
-block_size = 16 # 32
-embed_size = 16 # 256
+block_size = 32
+embed_size = 256
 dropout = 0.2
 n_heads = 6
 n_layer = 6
@@ -12,10 +12,11 @@ learn_rate = 3e-4
 max_iters = 5000
 eval_interval = 500
 
+# preprocess
+min_count_chars = 800
+min_count_tokens = 2
+
 # encoding
 end_token = "<END>"
 unknown_token = "<UNK>"
-
-# tokenizer patterns
-token_level = "char"
-token_pattern = {"word": "|\d|\\w+|[^\\s]", "char": "|."}[token_level]
+n_chats = 5
