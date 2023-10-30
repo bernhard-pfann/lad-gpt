@@ -19,17 +19,17 @@ def model_training(update: bool) -> None:
     """
     # LOAD DATA -----------------------------------------------------------------
 
-    train_data = torch.load("data/output/train.pt")
-    valid_data = torch.load("data/output/valid.pt")
+    train_data = torch.load("assets/output/train.pt")
+    valid_data = torch.load("assets/output/valid.pt")
 
-    with open("data/output/vocab.txt", "r", encoding="utf-8") as f:
+    with open("assets/output/vocab.txt", "r", encoding="utf-8") as f:
         vocab = json.loads(f.read())
 
     # INITIALIZE / LOAD MODEL ---------------------------------------------------
 
     if update:
         try:
-            model = torch.load("models/model.pt")
+            model = torch.load("assets/models/model.pt")
             print("Loaded existing model to continue training.")
         except FileNotFoundError:
             print("No existing model found. Initializing a new model.")
@@ -67,5 +67,5 @@ def model_training(update: bool) -> None:
         loss.backward()
         optimizer.step()
 
-    torch.save(model, "models/model.pt")
+    torch.save(model, "assets/models/model.pt")
     print("Model saved")

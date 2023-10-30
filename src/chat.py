@@ -25,14 +25,14 @@ def conversation() -> None:
     Model's Response: How are you?
     response >> end
     """
-    with open("data/output/vocab.txt", "r", encoding="utf-8") as f:
+    with open("assets/output/vocab.txt", "r", encoding="utf-8") as f:
         vocab = json.loads(f.read())
 
-    with open("data/output/contacts.txt", "r", encoding="utf-8") as f:
+    with open("assets/output/contacts.txt", "r", encoding="utf-8") as f:
         contacts = json.loads(f.read())   
 
     spec_tokens = contacts + [end_token]
-    model = torch.load("models/model.pt")
+    model = torch.load("assets/models/model.pt")
     completer = WordCompleter(spec_tokens, ignore_case=True)
     
     input = prompt("message >> ", completer=completer, default="")

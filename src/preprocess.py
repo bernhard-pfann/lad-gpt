@@ -57,7 +57,7 @@ def make_train_test() -> None:
     5. Splits the encoded data into training and validation sets
     6. Saves the training and validation datasets, as well as the vocab and senders, to disk
     """
-    with open("data/input/chat.txt", "r") as f:
+    with open("assets/input/chat.txt", "r") as f:
         text = f.read()
 
     # remove very rare characters (mostly emojies)
@@ -94,13 +94,13 @@ def make_train_test() -> None:
     valid_data = data[n:]
 
     # export tensors
-    torch.save(train_data, "data/output/train.pt")
-    torch.save(valid_data, "data/output/valid.pt")
+    torch.save(train_data, "assets/output/train.pt")
+    torch.save(valid_data, "assets/output/valid.pt")
 
-    with open("data/output/vocab.txt", "w", encoding="utf-8") as f:
+    with open("assets/output/vocab.txt", "w", encoding="utf-8") as f:
         f.write(json.dumps(vocab))
 
-    with open("data/output/contacts.txt", "w", encoding="utf-8") as f:
+    with open("assets/output/contacts.txt", "w", encoding="utf-8") as f:
         f.write(json.dumps(contacts))
 
     print("SUCCESS")
