@@ -6,7 +6,7 @@ from src import chat, preprocess, train
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["preprocess", "train", "chat"], help="The mode to be execute.")
-    parser.add_argument("--update", action="store_true", help="Flag if model shall be updated for trained from scratch")
+    parser.add_argument("--update", action="store_true", help="Flag when model shall be updated based on current parameters")
     args = parser.parse_args()
 
     if args.mode == "preprocess":
