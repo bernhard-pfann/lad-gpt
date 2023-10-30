@@ -9,7 +9,7 @@ The model closely follows the architecture introduced in "Attention Is All You N
 
 ## Folder Structure
 ```
-|-- data
+|-- assets
 |   |-- input
 |   |   |-- chat.txt
 |   |-- output
