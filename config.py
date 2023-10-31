@@ -13,8 +13,8 @@ max_iters = 5000
 eval_interval = 500
 
 # preprocess
-min_count_chars = 800
-min_count_tokens = 2
+min_count_chars = 1
+min_count_tokens = 1
 
 # encoding
 end_token = "<END>"
