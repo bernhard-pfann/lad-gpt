@@ -1,11 +1,10 @@
-# Synethesize your WhatsApp Conversations
+# Train a Language Model on your WhatsApp Chats
 ## Overview
-This repository facilitates the training of a character-level or word-level language model solely based on WhatsApp chat messages. After model training, one can kick-off a synthetic conversation from the Whatsapp chat group. <br>
-- <b>Chat messages:</b> I have privately trained the model on the WhatsApp messages of a chat group with >8 Mio characters. However, the model might also achieve reasonable quality with a smaller corpus.
-
+This repository facilitates the training of a character-level or word-level language model solely based on WhatsApp chat messages. After model training, one can kick-off a synthetic conversation with the trained on Whatsapp chat group. <br>
+- <b>Chat messages:</b> I have privately trained the model on Whatsapp chats from a group with >8 Mio characters. The <code>assets/input/chat.txt</code> is just a placeholder, to be replaced with the actual corpus of chat messages.
 - <b>Language model:</b>
 The model closely follows the architecture introduced in "Attention Is All You Need" (2017) by Vaswani et. al.. Also the pytorch implementation of the model is heavily inspired by a [video tutorial by Andrew Kaparty](https://www.youtube.com/watch?v=kCc8FmEb1nY).
-
+- <b>Results:</b> While the overall performance of my privately trained model is clearly not comparable with sota language models, the generated text clearly exhibits recognizable lingusitic patterns and vocabulary.
 
 ## Folder Structure
 ```
@@ -30,7 +29,7 @@ The model closely follows the architecture introduced in "Attention Is All You N
 ```
 
 ### Assets Description:
-- <code>assets/input/chat.txt:</code> The input file needs to be an exported WhatsApp chat.
+- <code>assets/input/chat.txt:</code> The input file needs to be an exported WhatsApp chat (without media).
 - <code>assets/output/:</code> The encoded training/validation data and the trained model will be written into this localtion.
 - <code>assets/models/model.pt:</code> Trained pytorch model object.
 
@@ -41,6 +40,7 @@ The model closely follows the architecture introduced in "Attention Is All You N
 - <code>src/chat.py:</code> Contains the function for conversational interaction with the model.
 - <code>src/utils.py:</code> Other useful utility functions.
 - <code>run.py:</code> The main script with an argument parser to call either of the three actions ("preprocess", "train", "chat").
+- <code>config.py:</code> Parameters for preprocessing and model training are recorded.
 
 ## How to Get Started
 ### Installation:
@@ -54,24 +54,16 @@ To utilize this project fully, you'll need a .txt file that contains messages fr
 
 ### For Android Users:
 1. Open WhatsApp and Navigate to Group Chat: Open the WhatsApp application on your Android device and go to the group chat you wish to export.
-
 2. Tap on the Three Dots: These are usually at the top right corner of the chat window.
-
 3. More -> Export Chat: Choose 'More' from the drop-down and then select 'Export chat'.
-
 4. Choose Without Media: You'll get an option to include or exclude media. Choose 'Without Media' to export only the text messages.
-
 5. Select Export Method: You will be prompted to select how you want to export the chat. You can send it to your email, and from there, download it as a .txt file.
 
 ### For iPhone Users:
 1. Open WhatsApp and Navigate to Group Chat: Open the WhatsApp application on your iPhone and navigate to the group chat you want to export.
-
 2. Tap on the Group Name: This is at the top of the chat window to go to 'Group Info'.
-
 3. Scroll Down and Export Chat: Scroll down and you'll see an 'Export Chat' option. Tap on it.
-
 4. Choose Without Media: A pop-up will appear asking if you want to include media files. Select 'Without Media'.
-
 5. Select Export Method: Choose an option to export the chat, for example, through Mail. You can then download the text file from your email.
 
 Once you have the .txt file, place it in the <code>assets/input</code> directory, called <code>chat.txt</code>. Then you are ready to go!
